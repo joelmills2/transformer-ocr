@@ -6,7 +6,9 @@ from recognition import get_recognition, load_trocr_model
 
 def ocr_pipeline(image_path):
     """
-    Run the OCR pipeline: detect text and then recognize it.
+    Run the OCR pipeline: detection -> recognition.
+
+    CRAFT (Clova) is used for text detection and TrOCR (Microsoft) is used for text recognition.
     """
     # Load the models
     processor, model = load_trocr_model()
