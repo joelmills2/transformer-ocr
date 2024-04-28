@@ -3,10 +3,12 @@ ocr-env/
 __pycache__/
 *.pyc
 .vscode/
-craft_output/
+src/craft_output/
 data/results/
 notebooks/.ipynb_checkpoints/
 *.log
 *.csv
 *.json
 *.txt
+src/images/
+data/

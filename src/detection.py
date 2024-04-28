@@ -1,6 +1,6 @@
 from craft_text_detector import Craft
 import cv2
-
+import numpy as np
 
 def load_craft_model():
     """
@@ -15,23 +15,36 @@ def load_craft_model():
         low_text=0.4,  # 0.4 is default, higher value means less low-confidence text detected
     )
     return craft
+    # should run a grid search to find the best parameters for the model
 
 
 def detect_text(image, craft):
     """
     Detect text in the image using the CRAFT model.
     """
-    prediction_result = craft.detect_text(image) # Perform text detection
-    return prediction_result["boxes"]
+    prediction_result = craft.detect_text(image)  # Perform text detection
+    boxes = prediction_result["boxes"]
+
+    # Convert the detected coordinates to integer values and adjust the format
+    adjusted_boxes = []
+    for box in boxes:
+        # Ensure box coordinates are integers and arrange them as [min_x, min_y, max_x, max_y]
+        int_box = np.array(box, dtype=np.float32).astype(np.int32)
+        min_x, min_y = np.min(int_box[:, 0]), np.min(int_box[:, 1])
+        max_x, max_y = np.max(int_box[:, 0]), np.max(int_box[:, 1])
+        adjusted_boxes.append([min_x, min_y, max_x, max_y])
+
+    return adjusted_boxes
 
 
-def preprocess_image(image_path):
+def preprocess_image(image):
     """
     Preprocess the image before detecting text.
     """
-    image = cv2.imread(image_path)
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) # Convert to grayscale
-    image = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1] # Apply thresholding (white or black)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    image = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[
+        1
+    ]  # Apply thresholding (white or black)
     return image
 
 
@@ -42,5 +55,5 @@ def get_detection(image_path):
     craft = load_craft_model()
     image = preprocess_image(image_path)
     boxes = detect_text(image, craft)
-    craft.unload_craftnet_model() # Unload the CRAFT model
+    # craft.unload_craftnet_model()  # Unload the CRAFT model
     return boxes

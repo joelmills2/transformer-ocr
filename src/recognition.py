@@ -1,6 +1,5 @@
 from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 from PIL import Image
-import numpy as np
 import cv2
 
 
@@ -36,17 +35,13 @@ def get_recognition(image, boxes):
     processor, model = load_trocr_model()
     texts = []
     for box in boxes:
-        # Ensure box coordinates are integer values
-        box = np.array(box).astype(np.int32)
-        min_x, min_y, max_x, max_y = box[0][0], box[0][1], box[2][0], box[2][1]
-
-        # Crop the image to the detected text region
+        min_x, min_y, max_x, max_y = box
         cropped_region = image[min_y:max_y, min_x:max_x]
+        cropped_region_rgb = cv2.cvtColor(
+            cropped_region, cv2.COLOR_BGR2RGB
+        )  # Convert BGR to RGB
 
-        # Convert color space from BGR to RGB which is expected by TrOCR
-        cropped_region_rgb = cv2.cvtColor(cropped_region, cv2.COLOR_BGR2RGB)
-
-        # Recognize the text in the cropped image
+        # Recognize text using TrOCR
         text = recognize_text(cropped_region_rgb, model, processor)
         texts.append(text)
-    return texts
+    return texts, boxes
