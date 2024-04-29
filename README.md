@@ -1,9 +1,9 @@
 Implementation of a transformer-based optical character recognition in Python. Uses CRAFT for detection, and TrOCR for recognition.
 
+
 **Citations:**
 
 _CRAFT_
-
 ```bibtex
 @inproceedings{baek2019character,
   title={Character Region Awareness for Text Detection},
@@ -14,6 +14,7 @@ _CRAFT_
 }
 ```
 
+
 _TrOCR-Microsoft_
 ```bibtex
 @misc{li2021trocr,
@@ -23,5 +24,16 @@ _TrOCR-Microsoft_
   eprint={2109.10282},
   archivePrefix={arXiv},
   primaryClass={cs.CL}
+}
+```
+
+
+_FUNSD training dataset - used for testing and fine-tuning_
+```bibtex
+@inproceedings{jaume2019,
+    title = {FUNSD: A Dataset for Form Understanding in Noisy Scanned Documents},
+    author = {Guillaume Jaume, Hazim Kemal Ekenel, Jean-Philippe Thiran},
+    booktitle = {Accepted to ICDAR-OST},
+    year = {2019}
 }
 ```
