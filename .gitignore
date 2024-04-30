@@ -6,9 +6,11 @@ __pycache__/
 src/craft_output/
 data/results/
 notebooks/.ipynb_checkpoints/
+src/images/
 *.log
 *.csv
 *.json
 *.txt
 src/images/
 data/
+src/box_labels/
