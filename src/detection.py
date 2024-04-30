@@ -2,7 +2,8 @@ from craft_text_detector import Craft
 import cv2
 import numpy as np
 
-def load_craft_model():
+
+def load_craft_model(text_threshold=0.5, link_threshold=0.4, low_text=0.4):
     """
     Load the CRAFT model.
     """
@@ -10,9 +11,9 @@ def load_craft_model():
         output_dir="craft_output",
         crop_type="poly",  # Polygon or rectangle
         cuda=False,  # Use GPU acceleration, False for CPU
-        text_threshold=0.6,  # 0.7 is default, higher value means less text detected but with higher confidence
-        link_threshold=0.4,  # 0.4 is default, higher value means less links between text detected but with higher confidence
-        low_text=0.4,  # 0.4 is default, higher value means less low-confidence text detected
+        text_threshold=text_threshold,  # 0.7 is default, higher value means less text detected but with higher confidence
+        link_threshold=link_threshold,  # 0.4 is default, higher value means less links between text detected but with higher confidence
+        low_text=low_text,  # 0.4 is default, higher value means less low-confidence text detected
     )
     return craft
     # should run a grid search to find the best parameters for the model
@@ -22,6 +23,9 @@ def detect_text(image, craft):
     """
     Detect text in the image using the CRAFT model.
     """
+    if image is None or image.size == 0:
+        print("The image is empty.")
+        return None
     prediction_result = craft.detect_text(image)  # Perform text detection
     boxes = prediction_result["boxes"]
 
@@ -41,6 +45,9 @@ def preprocess_image(image):
     """
     Preprocess the image before detecting text.
     """
+    if image is None or image.size == 0:
+        print("The image is empty.")
+        return None
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
     image = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[
         1
@@ -48,11 +55,11 @@ def preprocess_image(image):
     return image
 
 
-def get_detection(image_path):
+def get_detection(image_path, text_threshold=0.6, link_threshold=0.4, low_text=0.4):
     """
     Perform detection and return bounding boxes.
     """
-    craft = load_craft_model()
+    craft = load_craft_model(text_threshold, link_threshold, low_text)
     image = preprocess_image(image_path)
     boxes = detect_text(image, craft)
     # craft.unload_craftnet_model()  # Unload the CRAFT model

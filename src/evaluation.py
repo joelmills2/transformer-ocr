@@ -7,10 +7,30 @@ from jiwer import wer, cer
 import numpy as np
 
 
-def calculate_iou(detected_box, true_box):
+def calculate_iou(detected_box, true_box, epsilon=1e-3):
     """
-    Implemetation of Intersection over Union (IoU) for text detection evaluation.
+    Implementation of Intersection over Union (IoU) for text detection evaluation.
+    Modified to consider a detected box as correct if it is fully within a true box or vice versa,
+    with a small margin of error.
     """
+    # Check if detected box is fully within true box
+    if (
+        detected_box[0] >= true_box[0] - epsilon
+        and detected_box[1] >= true_box[1] - epsilon
+        and detected_box[2] <= true_box[2] + epsilon
+        and detected_box[3] <= true_box[3] + epsilon
+    ):
+        return 1.0
+
+    # Check if true box is fully within detected box
+    if (
+        true_box[0] >= detected_box[0] - epsilon
+        and true_box[1] >= detected_box[1] - epsilon
+        and true_box[2] <= detected_box[2] + epsilon
+        and true_box[3] <= detected_box[3] + epsilon
+    ):
+        return 1.0
+
     # Calculate intersection coordinates
     x_left = np.maximum(detected_box[0], true_box[0])
     y_top = np.maximum(detected_box[1], true_box[1])
@@ -65,8 +85,8 @@ def calculate_detection_metrics(detected_boxes, true_boxes, iou_threshold=0.5):
         if (precision + recall) > 0
         else 0
     )
-    print(f"TP: {tp}, FP: {fp}, FN: {fn}")
-    print(f"Precision: {precision}, Recall: {recall}, F1: {f1}")
+    # print(f"TP: {tp}, FP: {fp}, FN: {fn}")
+    # print(f"Precision: {precision}, Recall: {recall}, F1: {f1}")
     return precision, recall, f1
 
 
@@ -95,6 +115,6 @@ def calculate_metrics(detected_boxes, detected_texts, true_boxes, true_texts):
         "wer": wer_score,
     }
 
-    print(f"Precision: {precision}, Recall: {recall}, F1: {f1}")
-    print(f"CER: {cer_score}, WER: {wer_score}")
+    # print(f"Precision: {precision}, Recall: {recall}, F1: {f1}")
+    # print(f"CER: {cer_score}, WER: {wer_score}")
     return metrics
